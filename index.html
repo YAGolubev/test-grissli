@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Простые числа GRISSLI</title>
+<style>
+	html, body, article, section { height: 100%; margin: 0; padding: 0; }
+	@font-face{
+	    font-family: 'wf_SegoeUILight';
+	    src:url('http://i.s-microsoft.com/fonts/Segoe-UI/Cyrillic/Light/latest.eot');
+	    src:url('http://i.s-microsoft.com/fonts/Segoe-UI/Cyrillic/Light/latest.eot?#iefix') format('embedded-opentype'),
+	           url('http://i.s-microsoft.com/fonts/Segoe-UI/Cyrillic/Light/latest.woff') format('woff'),
+	           url('http://i.s-microsoft.com/fonts/Segoe-UI/Cyrillic/Light/latest.ttf') format('truetype'),
+	           url('http://i.s-microsoft.com/fonts/Segoe-UI/Cyrillic/Light/latest.svg#web') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+	.layout {
+		color: #fff;
+		background-color: #2e3436;
+		font-size: 9em;
+		font-family: "wf_SegoeUILight";
+
+	    width: 100%;
+	    /* Ширина серого блока изменяется в зависимости от ширины окна от 1024px до 1300px */
+		min-width: 1024px;
+		max-width: 1300px;
+		/* Высота серого блока не может быть меньше 400px */
+		min-height: 400px;
+		/* Серый блок позиционируется по по центру страницы и занимает всю её высоту */
+		height: 100%;
+		margin: 0 auto; /* блок в середине страницы */
+		text-align: center; /* текст в середине горизонтали */	
+
+		display: -webkit-flex; /* Safari */
+		display: flex; 
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-content: center;
+		/* центрирование контента */
+		align-items: center;	/* контент в середине по вертикали */
+		justify-content: center; /* контент в середине по горизонтали */
+	}
+	.layout-blocks {
+		width: 100%;
+	}
+	.layout-txt {
+	    font-size: 0.8em;
+	    font-weight: bold;
+	    letter-spacing: 13px;
+	    margin-bottom: 55px;
+	    word-wrap: normal;
+	}
+	.layout-result {
+		font-size: 1em;
+		font-weight: bold;
+		letter-spacing: 11px;
+		margin-top: 23px;
+		word-wrap: normal;
+	}
+	@media screen and (max-height: 600px) { /* При высоте окна меньше 600px */
+		.layout {
+			max-width: none; /* снимается ограничение на максимальную ширину блока */
+		}
+		.layout-blocks-inline {
+			width: 50%;
+		}	
+		.layout-txt {
+			font-size: 0.75em;
+			font-weight: bold;
+			letter-spacing: 7px;			
+			text-align: right;
+		}
+		.layout__input { 
+			margin: 10px 0 77px 87px;
+		}
+		.layout-result {
+			margin: -105px -179px 0 0;
+		}	
+	}
+	.layout__input {
+		color: #fff;
+		background-color: #006c90;
+	    border: 1px solid #fff; /* однородность рамки */
+	    text-align: center;
+	    font-size: 0.9em;
+		width: 885px;
+	    height: 165px;
+	    
+	    /* углы input'a в шаблоне не прямые */   
+	    -moz-border-radius: 1px;
+	    -webkit-border-radius: 1px;
+	    border-radius: 1px;   
+	    
+	    /* убирает свечение вокруг */
+	    -moz-box-shadow: 0 0 0px #000;
+	    -webkit-box-shadow: 0 0 0px #000;
+	    box-shadow: 0 0 0px #000;
+
+		/* внутренняя тень */
+	    -moz-box-shadow: inset 0px 0px 5px 2px #83b8c9;
+		-webkit-box-shadow: inset 0px 0px 5px 2px #83b8c9;
+		box-shadow: inset 0px 0px 5px 2px #83b8c9;    
+	}
+	/* Цвет подсказывающего текста */
+	.layout__input::-webkit-input-placeholder { color: #6dc1ec; }
+	.layout__input::-moz-placeholder          { color: #6dc1ec; }/* Firefox 19+ */
+	.layout__input:-moz-placeholder           { color: #6dc1ec; }/* Firefox 18- */
+	.layout__input:-ms-input-placeholder      { color: #6dc1ec; }
+	/* единое поведение при фокусе поля */
+	.layout__input:focus::-webkit-input-placeholder {color: transparent}
+	.layout__input:focus::-moz-placeholder          {color: transparent}
+	.layout__input:focus:-moz-placeholder           {color: transparent}
+	.layout__input:focus:-ms-input-placeholder      {color: transparent}
+</style>	
+</head>
+<body>
+	<article>
+		<section class="layout">
+				<div class="layout-blocks layout-blocks-inline layout-txt">Введите Число</div>
+				<div class="layout-blocks layout-blocks-inline">
+					<form name="forma">
+						<input type="text" class="layout__input" type="text" placeholder="0" onkeyup="if(/[^\d]/.test(this.value))this.value=this.value.replace(/[^\d]+/g,'');"></input>
+					</form>
+				</div>	
+				<div class="layout-blocks layout-result" id="result"></div>
+		</section>
+	</article>
+</body>
+	<script>
+	    var event = ['keyup', 'change'], i = event.length;
+	    while(i--){
+	    	document.forms['forma']['on'+event[i]] = function(i){
+	        	return function(){
+					var n = parseInt(this.elements[0].value);
+					if (n <= 1) document.getElementById('result').innerHTML = 'Не определено';
+					else {
+					if ((n%2==0)&&(n!=2)) // любое четное число - составное
+					     document.getElementById('result').innerHTML =  'Составное число';
+					else if (n==2)//число 2 простое
+					     document.getElementById('result').innerHTML = 'Да'; //Простое число
+					else{ // число нечетное
+					     k=Math.round(Math.sqrt(n));
+					     flag = false;
+					             
+					     for(i=2; i<k+1; i++)
+					        if(n%i==0)
+					        {
+					          document.getElementById('result').innerHTML = 'Составное число';
+					          flag = true;
+					          break;
+					         }
+					            
+					     if (flag == false)
+					       document.getElementById('result').innerHTML = 'Да'; //Простое число
+					}             
+				} //else
+					if (this.elements[0].value.length == 0)
+						document.getElementById('result').innerHTML = '';
+	           	};
+	    	}(i);
+	    }; //while
+	</script>
+</html>
